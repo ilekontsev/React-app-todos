@@ -2,6 +2,8 @@
     margin: 0;
     box-sizing: border-box;
     outline: none;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 200;
 }
 
 
@@ -19,7 +21,7 @@
 .header{
     width: 70%;
     height: 120px;
-    margin: 10px;
+    margin: 50px;
     padding: 10px;
     display: flex;
     align-items: center;
@@ -27,10 +29,12 @@
 }
 .h1{
     font-size: 120px;
+    
 }
 a{
+    font-weight: 100;
     text-decoration: none;
-    color: rgb(245, 154, 112);
+    color: #b9a1a5;
 }
 .main{
     width: 70%;
@@ -39,13 +43,17 @@ a{
 .contain-input{
     position: relative;
 }
-.arrow{
+.arrow,.solid,.invisible {
     position: absolute;
-    width: 7%;
+    width: 9%;
     height: 100%;
     top: 0;
     left: 0;
-    background: grey;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: visible;
+    opacity: 0.5;
 }
 
 .inp{
@@ -61,7 +69,7 @@ a{
 .task{
     width: 100%;
     height: 50px;
-    padding: 5px 10px 5px 60px;
+    padding: 5px 10px 5px 55px;
     position: relative;
     border-top: 1px solid rgb(201, 201, 201);
     display: flex;
@@ -78,16 +86,25 @@ a{
 }
 
 .cross{
-    width: 45px;
-    height: 45px;
     position: absolute;
-    top: 2px;
+    width: 45px;
+    height: 100%;
+    top: 0;
     right: 0;
-    background: red;
-    border: 1px solid black;
+    transition: 0.2;
+    color: rgb(168, 18, 18);
+    visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-
-.footer{    
+.fa-times{
+    pointer-events: none;
+}
+.task:hover .cross{
+    visibility: visible;
+}
+.footer{   
     height: 50px;
     display: flex;
     align-items: center;
@@ -107,26 +124,76 @@ a{
     display: flex;
     justify-content: space-around;
 }
-.all{
-    border: 1px solid black;
-    padding: 5px;
-}
+
 .clear{
     width: 20%;
     text-align: center;
+    cursor: pointer;
+}
+.clear:hover{
+    text-decoration: underline;
 }
 
 
-.active,
-.completed,
-.clear{
+.filter{
     padding: 5px;
-    border: 1px solid rgba(0, 0, 0, 0);
+    border: 1px solid rgba(124, 124, 124, 0);
 }
 
-.all:hover,
-.active:hover,
-.completed:hover,
-.clear:hover {
-    border: 1px solid black;
+.filter:hover {
+    border: 1px solid rgb(170, 170, 170);
 }
+.activeFilter{
+    border: 1px solid rgb(167, 167, 167);
+}
+
+.label {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  cursor: pointer;
+  position: absolute;
+  left: 10px;
+  top: 7px;
+  width: 33px;
+  height: 33px;
+}
+
+.label:after {
+  border: 2px solid green;
+  border-top: none;
+  border-right: none;
+  content: "";
+  height: 5px;
+  left: 6px;
+  opacity: 0;
+  position: absolute;
+  top: 11px;
+  transform: rotate(-50deg);
+  width: 18px;
+}
+
+input[type="checkbox"] {
+  visibility: hidden;
+}
+
+ input[type="checkbox"]:checked + label {
+  border-color: rgb(156, 156, 156);
+}
+
+input[type="checkbox"]:checked + label:after {
+  opacity: 1;
+}
+
+::-webkit-input-placeholder {
+    opacity: 0.6;
+    font-style: italic;
+}
+
+.invisible,.hidden{
+    visibility: hidden;
+}
+.solid{
+    opacity: 1;
+}
+

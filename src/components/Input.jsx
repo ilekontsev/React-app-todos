@@ -5,7 +5,6 @@ class Input extends PureComponent {
     super(props);
     this.state = {
       value: "",
-      id: 0,
     };
   }
 
@@ -13,32 +12,34 @@ class Input extends PureComponent {
     this.setState({ value: event.target.value });
   }
   addValue = () => {
-    this.props.onEnter(this.state.value, this.state.id++);
+    this.props.onEnter(this.state.value);
+    this.setState({ value: "" });
   };
 
   keyEnter = (e) =>{
-    if(e.key === 'Enter' && e.target.value.trim() !== 0){
+    if(e.key === 'Enter' && e.target.value.trim().length !== 0){
         this.addValue()
-        this.setState({value: ""})
     }
   }
-
-  noteAll = () => {
-    
-  }
+ 
 
 
   render() {
     return (
       <div className="contain-input">
-        <div className="arrow" onClick="noteAll"></div>
+        <div 
+        className={this.props.arrowConfig} 
+        onClick ={this.props.noteAll}>
+          <div className="fas fa-chevron-down"></div>
+        </div>
         <input
-        className = "inp"
+          className="inp"
           type="text"
-          onChange={evt => this.writeInput(evt)}
+          placeholder ="What needs to be done?"
+          onChange={(evt) => this.writeInput(evt)}
           value={this.state.value}
-          onKeyDown ={this.keyEnter}
-        />  
+          onKeyDown={this.keyEnter}
+        />
       </div>
     );
   }
