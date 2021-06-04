@@ -1,12 +1,12 @@
 import React, {PureComponent} from "react";
-import Header from "./Header/Header";
-import Task from "./Task/Task";
-import Input from "./Input/Input";
-import Footer from "./Footer/Footer";
+import Header from "../Header/Header";
+import Task from "../Task/Task";
+import Input from "../Input/Input";
+import Footer from "../Footer/Footer";
 
 const axios = require('axios').default;
 
-class App extends PureComponent {
+class Logic extends PureComponent {
     state = {
         tasks: [],
         filterValue: "all",
@@ -166,15 +166,12 @@ class App extends PureComponent {
         if (!this.getTasks().length) {
             return config;
         }
-
         const isChecked = this.state.tasks.every((item) => item.checked);
-
         config = isChecked ? "solid" : "arrow";
         return config;
     };
 
     render() {
-
         return (
             <div className="contain">
                 <Header/>
@@ -205,4 +202,4 @@ class App extends PureComponent {
     }
 }
 
-export default App;
+export default Logic;
