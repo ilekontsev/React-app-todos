@@ -6,19 +6,22 @@ import Footer from "../Footer/Footer";
 
 const axios = require('axios').default;
 
-class Logic extends PureComponent {
+class Todos extends PureComponent {
     state = {
         tasks: [],
         filterValue: "all",
     };
 
    async componentDidMount() {
-        await this.callDataServer()
+        await this.Init()
     }
 
-    callDataServer = async () => {
+    Init = async () => {
+
         try {
-            let response = await axios.get('http://localhost:3000')
+            const response = await axios.get('http://localhost:3000', {
+                headers: { 'Authorization': this.props.token}
+            })
             const upd = response.data
             this.setState({
                 tasks: upd
@@ -50,10 +53,11 @@ class Logic extends PureComponent {
 
 
     sendServer = (updated) => {
+
         try {
-            return axios.post('http://localhost:3000', updated)
+            return axios.post('http://localhost:3000', updated, { headers: { 'Authorization': this.props.token}})
         } catch (err) {
-            console.log("ERRO ", err)
+            console.log("ERROr", err)
         }
     }
 
@@ -202,4 +206,4 @@ class Logic extends PureComponent {
     }
 }
 
-export default Logic;
+export default Todos;

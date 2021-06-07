@@ -1,5 +1,6 @@
 import { PureComponent } from "react";
 
+
 class Input extends PureComponent {
   constructor(props) {
     super(props);
@@ -30,7 +31,7 @@ class Input extends PureComponent {
         <div 
         className={this.props.arrowConfig} 
         onClick ={this.props.noteAll}>
-          <div className="fas fa-chevron-down"></div>
+          <div className="fas fa-chevron-down"/>
         </div>
         <input
           className="inp"
