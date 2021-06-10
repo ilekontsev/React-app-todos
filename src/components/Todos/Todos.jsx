@@ -4,31 +4,68 @@ import Task from "../Task/Task";
 import Input from "../Input/Input";
 import Footer from "../Footer/Footer";
 
+
 const axios = require('axios').default;
+let request
+
+axios.interceptors.request.use(async req => {
+    req.headers.authorization = await localStorage.getItem('token')
+    if (req.url === "http://localhost:3000/refreshToken") return req
+    request = req
+    return req
+})
+
+axios.interceptors.response.use(res => {
+    return res
+}, async (err) => {
+    console.log(err)
+    if (err.response?.status === 401) {
+        const refToken = {
+            refToken: localStorage.getItem("refToken")
+        }
+        await axios.post('http://localhost:3000/refreshToken', refToken)
+            .then((response) => {
+                const token = response.data.token
+                const refToken = response.data.refToken
+                localStorage.setItem("token", token)
+                localStorage.setItem("refToken", refToken)
+            })
+        console.log(23)
+        request.authorization = localStorage.getItem("token")
+        return axios.request(request)
+    }
+
+    if (err.response?.status === 403) {
+        console.log("wda")
+        localStorage.clear()
+        window.location.href = '/login'
+    }
+})
+
 
 class Todos extends PureComponent {
     state = {
         tasks: [],
         filterValue: "all",
     };
+    request = null
 
-   async componentDidMount() {
-        await this.Init()
+    async componentDidMount() {
+        await this.getTaskedWithServer()
     }
 
-    Init = async () => {
-
-        try {
-            const response = await axios.get('http://localhost:3000', {
-                headers: { 'Authorization': this.props.token}
-            })
+    getTaskedWithServer = async () => {
+        await axios.get('http://localhost:3000/todos/getTasks',
+        ).then((response) => {
             const upd = response.data
             this.setState({
                 tasks: upd
             })
-        } catch (err) {
-            console.log("ERRO ", err)
-        }
+        }).catch(err => {
+            console.log('eereeerr ', err)
+        })
+
+
     }
 
     //создание элемента
@@ -42,25 +79,21 @@ class Todos extends PureComponent {
             (item) => item.text === updated.text
         );
         if (!checkDublicate) {
-            const response = await this.sendServer(updated)
-            updated._id = response.data
-
-            this.setState({
-                tasks: this.state.tasks.concat(updated),
-            });
+            const response = await this.taskCreatedSendServer(updated)
+            if (response?.data !== undefined) {
+                updated._id = response.data._id
+                updated.userId = response.data.userId
+                this.setState({
+                    tasks: this.state.tasks.concat(updated),
+                });
+            }
         }
     };
 
 
-    sendServer = (updated) => {
-
-        try {
-            return axios.post('http://localhost:3000', updated, { headers: { 'Authorization': this.props.token}})
-        } catch (err) {
-            console.log("ERROr", err)
-        }
+    taskCreatedSendServer = async (updated) => {
+        return axios.post('http://localhost:3000/todos/createTask', updated)
     }
-
 
     //ищем отмеченный checkbox
     checkBox = async (id) => {
@@ -78,7 +111,10 @@ class Todos extends PureComponent {
 
     updateCheckedServer = (id, checked) => {
         try {
-            return axios.put('http://localhost:3000', {id, checked})
+            return axios.put('http://localhost:3000/todos/updCheckbox', {
+                id,
+                checked
+            })
         } catch (err) {
             console.log("ERROr ", err)
         }
@@ -94,11 +130,12 @@ class Todos extends PureComponent {
         this.setState({
             tasks,
         });
-        await this.noteAllServer(isChecked)
+        await this.noteAllServer(isChecked, tasks[0].userId)
     };
-    noteAllServer = (checked) => {
+    noteAllServer = (checked, userId) => {
+
         try {
-            return axios.put('http://localhost:3000/all', {checked})
+            return axios.put('http://localhost:3000/todos/all', {checked, userId})
         } catch (err) {
             console.log("ERROr ", err)
         }
@@ -111,16 +148,16 @@ class Todos extends PureComponent {
 
     //clear completed
     clearDel = async () => {
+        await this.clearDelServer(this.state.tasks[0].userId)
         const tasks = this.state.tasks.filter((item) => item.checked !== true);
         this.setState({
             tasks,
         });
-        await this.clearDelServer()
     };
 
-    clearDelServer = () => {
+    clearDelServer = (userId) => {
         try {
-            return axios.delete('http://localhost:3000/deleteAll')
+            return axios.delete('http://localhost:3000/todos/deleteAll', {params: {userId: userId}})
         } catch (err) {
             console.log("ERROr ", err)
         }
@@ -146,7 +183,7 @@ class Todos extends PureComponent {
     delItemServer = async (task) => {
         console.log(task)
         try {
-            return axios.delete(`http://localhost:3000/delete`, {params: {_id: task._id, text: task.text}})
+            return axios.delete(`http://localhost:3000/todos/delete`, {params: {_id: task._id, text: task.text}})
 
         } catch (err) {
             console.log("ERRO ", err)
@@ -164,6 +201,7 @@ class Todos extends PureComponent {
             return this.state.tasks.filter((task) => task.checked);
         }
     };
+
     arrowConfig = () => {
         let config = "invisible";
 
@@ -175,24 +213,24 @@ class Todos extends PureComponent {
         return config;
     };
 
+
     render() {
         return (
+
             <div className="contain">
                 <Header/>
+                <button className="butPos" onClick={this.props.logout}>logout</button>
                 <div className="main">
                     <Input
                         onEnter={this.add}
                         noteAll={this.noteAll}
                         arrowConfig={this.arrowConfig()}
                     />
-
                     <Task
-
                         tasks={this.getTasks()}
                         checkBox={this.checkBox}
                         delete={this.delete}
                     />
-
                     <Footer
                         tasks={this.state.tasks}
                         items={this.countItems()}
@@ -200,7 +238,9 @@ class Todos extends PureComponent {
                         applyFilter={this.applyFilter}
                         filterValue={this.state.filterValue}
                     />
+
                 </div>
+
             </div>
         );
     }
