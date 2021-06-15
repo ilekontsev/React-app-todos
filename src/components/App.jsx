@@ -1,5 +1,5 @@
 import {
-  BrowserRouter, Route, Redirect, Switch,
+  BrowserRouter, Route, Switch, Redirect,
 } from 'react-router-dom';
 import React, { PureComponent } from 'react';
 import Todos from './Todos/Todos';
@@ -44,32 +44,29 @@ class App extends PureComponent {
     render() {
       return (
         <BrowserRouter>
-          <Switch>
-            {!this.state.token
-                    && (
-                    <div>
-                      <Route path="/login" component={() => <Login setToken={this.setToken} />} />
-                      <Redirect to="/login" />
-                    </div>
-                    )}
-            {this.state.token
-                    && (
-                    <div>
-                      <Route
-                        path="/todos"
-                        component={() => (
-                          <Todos
-                            token={this.state.token}
-                            refToken={this.state.refToken}
-                            setToken={this.setToken}
-                            logout={this.logout}
-                          />
-                        )}
-                      />
-                      <Redirect path="/" to="/todos" />
-                    </div>
-                    )}
-          </Switch>
+          {!this.state.token
+            ? (
+              <Switch>
+                <Route path="/login" component={() => <Login setToken={this.setToken} />} />
+                <Redirect from="/" exect to="/login" />
+              </Switch>
+            )
+            : (
+              <Switch>
+                <Route
+                  path="/todos"
+                  component={() => (
+                    <Todos
+                      token={this.state.token}
+                      refToken={this.state.refToken}
+                      setToken={this.setToken}
+                      logout={this.logout}
+                    />
+                  )}
+                />
+                <Redirect from="/" to="/todos" />
+              </Switch>
+            )}
         </BrowserRouter>
       );
     }

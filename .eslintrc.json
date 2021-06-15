@@ -1,0 +1,49 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "plugin:react/recommended",
+    "airbnb"
+  ],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react",
+    "prettier",
+    "import"
+  ],
+  "rules": {
+
+    "prefer-destructuring": ["error", {
+      "VariableDeclarator": {
+        "array": false,
+        "object": false
+      },
+      "AssignmentExpression": {
+        "array": false,
+        "object": false
+      }
+    }, {
+      "enforceForRenamedProperties": false
+    }],
+    "react/destructuring-assignment": ["off", "always", { "ignoreClassFields": true }],
+
+    "no-console": "off",
+    "no-func-assign": "off",
+    "no-underscore-dangle": "off",
+    "no-param-reassign": "off",
+    "jsx-a11y/label-has-for": 0,
+    "jsx-a11y/label-has-associated-control": 0,
+    "react/jsx-filename-extension": 0
+
+  }
+}
