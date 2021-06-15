@@ -1,7 +1,7 @@
 import {PureComponent} from "react";
 
 
-class Input extends PureComponent {
+export default class InputTask extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
@@ -46,4 +46,3 @@ class Input extends PureComponent {
     }
 }
 
-export default Input;
