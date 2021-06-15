@@ -4,7 +4,6 @@ import "./Footer.css"
 class Footer extends PureComponent {
 
     render() {
-
         return (
             <div className={this.props.tasks.length ? "footer" : "gone"}>
                 <div className="items">{this.props.items} items left</div>
