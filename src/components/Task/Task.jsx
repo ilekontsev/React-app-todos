@@ -3,25 +3,25 @@ import { PureComponent } from "react";
 class Task extends PureComponent {
  
   checkTF = (id) => {
-    this.props.checkBox( id);
+    this.props.checkBox(id);
   };
 
   render() {
     return (
       <div className="task-contain">
         {this.props.tasks.map((item) => (
-          <div className="task" key={item.id}>
+          <div className="task" key={item._id}>
             <input
               className="checkbox"
-              onChange={() => this.checkTF(item.id)}
+              onChange={() => this.checkTF(item._id)}
               type="checkbox"
               checked={item.checked}
-              id={item.id}
+              id={item._id}
             />
-            <label htmlFor={item.id} className="label"></label>
+            <label htmlFor={item._id} className="label"/>
             <p>{item.text}</p>
             <div className="cross" onClick={() => this.props.delete(item)}>
-              <div className="fas fa-times"></div>
+              <div className="fas fa-times"/>
             </div>
           </div>
         ))}

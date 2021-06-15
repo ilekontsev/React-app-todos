@@ -1,145 +1,66 @@
-import React, { PureComponent } from "react";
-import Header from "./Header";
-import Task from "./Task";
-import Input from "./Input";
-import Footer from "./Footer/Footer";
+import {BrowserRouter, Route, Redirect, Switch} from "react-router-dom";
+import Todos from "./Todos/Todos";
+import Login from "./Login/Login"
+import {PureComponent} from "react";
+
 
 class App extends PureComponent {
-  state = {
-    tasks: [],
-    filterValue: "all",
-  };
-
-  //создание элемента
-  add = (value) => {
-    const updated = {
-      id: `${value}_${this.state.tasks.length}`,
-      text: value,
-      checked: false,
-    };
-    const checkdubl = this.state.tasks.some(
-      (item) => item.text === updated.text
-    );
-    if (!checkdubl) {
-      this.dropNote();
-      this.setState({
-        tasks: this.state.tasks.concat(updated),
-      });
-      console.log(this.state.tasks)
-    }
-  };
-  dropNote = () => {
-    this.state.tasks.map((item) => 
-      item.checked = false
-      
-    )
-  };
-
-  //ищем отмеченный checkbox
-  checkBox = (id) => {
-    const tasks = this.state.tasks.map((task) => {
-      if (task.id === id) {
-        task.checked = !task.checked;
-      }
-      return task;
-    });
-    this.setState({
-      tasks,
-    });
-  };
-
-  noteAll = () => {
-    const isChecked = this.state.tasks.some((item) => !item.checked);
-    const tasks = this.state.tasks.map((item) => {
-      item.checked = isChecked;
-      return item;
-    });
-    this.setState({
-      tasks,
-    });
-  };
-
-  applyFilter = (filterValue) => {
-    this.setState({
-      filterValue,
-    });
-  };
-
-  //clear completed
-  clearDel = () => {
-    const tasks = this.state.tasks.filter((item) => item.checked !== true);
-    this.setState({
-      tasks,
-    });
-  };
-
-  //счетчик элементов
-  countItems = () => {
-    let lenghtItems = this.state.tasks.filter((item) => item.checked !== true);
-    return lenghtItems.length;
-  };
-
-  //удаление элемента
-  delete = (element) => {
-    this.setState({
-      tasks: this.state.tasks.filter((item) => {
-        return item !== element;
-      }),
-    });
-  };
-
-  getTasks = () => {
-    if (this.state.filterValue === "all") {
-      return this.state.tasks;
-    }
-    if (this.state.filterValue === "active") {
-      return this.state.tasks.filter((task) => !task.checked);
-    }
-    if (this.state.filterValue === "completed") {
-      return this.state.tasks.filter((task) => task.checked);
-    }
-  };
-  arrowConfig = () => {
-    let config = "invisible";
-
-    if (!this.getTasks().length) {
-      return config;
+    state = {
+        token: "",
+        refToken: ""
     }
 
-    const isChecked = this.state.tasks.every((item) => item.checked);
+    componentDidUpdate() {
+        const getToken = localStorage.getItem('token')
+        const getRefToken = localStorage.getItem('refToken')
+        this.setState({
+            token: getToken,
+            refToken: getRefToken
+        })
+    }
 
-    config = isChecked ? "solid" : "arrow";
-    return config;
-  };
 
-  render() {
-    return (
-      <div className="contain">
-        <Header />
-        <div className="main">
-          <Input
-            onEnter={this.add}
-            noteAll={this.noteAll}
-            arrowConfig={this.arrowConfig()}
-          />
+    setToken = (token) => {
+        localStorage.setItem('token', token.token)
+        localStorage.setItem('refToken', token.refToken)
 
-          <Task
-            dblclick={this.dblclick}
-            tasks={this.getTasks()}
-            checkBox={this.checkBox}
-            delete={this.delete}
-          />
+        this.setState({
+            token: token.token,
+            refToken: token.refToken
+        })
+    }
 
-          <Footer
-            tasks={this.state.tasks}
-            items={this.countItems()}
-            clearDel={this.clearDel}
-            applyFilter={this.applyFilter}
-            filterValue={this.state.filterValue}
-          />
-        </div>
-      </div>
-    );
-  }
+    logout = () => {
+        localStorage.clear()
+        this.setState({
+            token: "",
+            refToken: ""
+        })
+    }
+
+    render() {
+        return (
+            <BrowserRouter>
+                <Switch>
+                    {!this.state.token && <>
+                        <Route path="/login" component={() => <Login setToken={this.setToken}/>}/>
+                        <Redirect to="/login"/>
+                    </>}
+                    {this.state.token && <>
+                        <Route path="/todos" component={() =>
+                            <Todos token={this.state.token}
+                                   refToken={this.state.refToken}
+                                   setToken={this.setToken}
+                                   logout={this.logout}/>}
+                        />
+                        <Redirect path="/" to="/todos"/>
+                    </>}
+                </Switch>
+            </BrowserRouter>
+        )
+
+    }
 }
+
+
 export default App;
